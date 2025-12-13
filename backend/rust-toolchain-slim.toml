@@ -1,0 +1,3 @@
+[toolchain]
+channel = "nightly" # Rustfmt needs nightly for many features.
+profile = "minimal" # Includes rustc, rust-std and cargo.
