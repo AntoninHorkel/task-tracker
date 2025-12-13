@@ -33,8 +33,8 @@ Register a new user
           "jwt": <string>
         }
         ```
-- HTTP 409 (CONFLICT): <error string>
-- HTTP 500 (INTERNAL SERVER ERROR): <error string>
+- HTTP 409 (CONFLICT): `<error string>`
+- HTTP 500 (INTERNAL SERVER ERROR): `<error string>`
 
 ### POST `/auth/login`
 
@@ -68,9 +68,9 @@ Login with username/password or refresh with JWT
           "username": <string>
         }
         ```
-- HTTP 400 (BAD REQUEST): <error string>
-- HTTP 401 (UNAUTHORIZED): <error string>
-- HTTP 500 (INTERNAL SERVER ERROR): <error string>
+- HTTP 400 (BAD REQUEST): `<error string>`
+- HTTP 401 (UNAUTHORIZED): `<error string>`
+- HTTP 500 (INTERNAL SERVER ERROR): `<error string>`
 
 ### POST `/auth/logout`
 
@@ -89,8 +89,8 @@ Logout and revoke JWT
 #### Response Payloads
 
 - HTTP 200 (OK): No content
-- HTTP 401 (UNAUTHORIZED): <error string>
-- HTTP 500 (INTERNAL SERVER ERROR): <error string>
+- HTTP 401 (UNAUTHORIZED): `<error string>`
+- HTTP 500 (INTERNAL SERVER ERROR): `<error string>`
 
 ## Task Endpoints
 
@@ -125,8 +125,8 @@ Get all tasks for authenticated user
         ]
         ```
     - Note: `due` is a UNIX timestamp or null
-- HTTP 401 (UNAUTHORIZED): <error string>
-- HTTP 500 (INTERNAL SERVER ERROR): <error string>
+- HTTP 401 (UNAUTHORIZED): `<error string>`
+- HTTP 500 (INTERNAL SERVER ERROR): `<error string>`
 
 ### POST `/task`
 
@@ -150,8 +150,8 @@ Create a new task
 #### Response Payloads
 
 - HTTP 201 (CREATED): No content
-- HTTP 401 (UNAUTHORIZED): <error string>
-- HTTP 500 (INTERNAL SERVER ERROR): <error string>
+- HTTP 401 (UNAUTHORIZED): `<error string>`
+- HTTP 500 (INTERNAL SERVER ERROR): `<error string>`
 
 ### GET `/task/{id}`
 
@@ -186,9 +186,9 @@ Get a specific task by ID
         }
         ```
     - Note: `due` is a UNIX timestamp or null
-- HTTP 401 (UNAUTHORIZED): <error string>
-- HTTP 404 (NOT FOUND): <error string>
-- HTTP 500 (INTERNAL SERVER ERROR): <error string>
+- HTTP 401 (UNAUTHORIZED): `<error string>`
+- HTTP 404 (NOT FOUND): `<error string>`
+- HTTP 500 (INTERNAL SERVER ERROR): `<error string>`
 
 ### POST `/task/{id}`
 
@@ -217,9 +217,9 @@ Update an existing task
 #### Response Payloads
 
 - HTTP 200 (OK): No content
-- HTTP 401 (UNAUTHORIZED): <error string>
-- HTTP 404 (NOT FOUND): <error string>
-- HTTP 500 (INTERNAL SERVER ERROR): <error string>
+- HTTP 401 (UNAUTHORIZED): `<error string>`
+- HTTP 404 (NOT FOUND): `<error string>`
+- HTTP 500 (INTERNAL SERVER ERROR): `<error string>`
 
 ### DELETE `/task/{id}`
 
@@ -242,6 +242,6 @@ Delete a task
 #### Response Payloads
 
 - HTTP 200 (OK): No content
-- HTTP 401 (UNAUTHORIZED): <error string>
-- HTTP 404 (NOT FOUND): <error string>
-- HTTP 500 (INTERNAL SERVER ERROR): <error string>
+- HTTP 401 (UNAUTHORIZED): `<error string>`
+- HTTP 404 (NOT FOUND): `<error string>`
+- HTTP 500 (INTERNAL SERVER ERROR): `<error string>`
