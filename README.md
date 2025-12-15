@@ -22,40 +22,40 @@ docker compose down -v # Stop and remove everything including volumes
 
 ### Send messages
 
-Text:
-```json
-{"type": "refresh_jwt", "jwt": <string>}
-```
-+ PING
+- Text:
+    ```json
+    {"type": "refresh_jwt", "jwt": <string>}
+    ```
+- PING
 
 ### Receive messages
 
-Text:
-```json
-{"type": "error", "message": <string>}
-{
-  "type": "task_created",
-  "task": {
-    "id": <uuid string>,
-    "category": <string>,
-    "text": <string>,
-    "completed": <bool>,
-    "due": <int | null>
-  }
-}
-{
-  "type": "task_updated",
-  "task": {
-    "id": <uuid string>,
-    "category": <string>,
-    "text": <string>,
-    "completed": <bool>,
-    "due": <int | null>
-  }
-}
-{"type": "task_deleted", "task_id": <uuid string>}
-```
-+ PONG
+- Text:
+    ```json
+    {"type": "error", "message": <string>}
+    {
+      "type": "task_created",
+      "task": {
+        "id": <uuid string>,
+        "category": <string>,
+        "text": <string>,
+        "completed": <bool>,
+        "due": <int | null>
+      }
+    }
+    {
+      "type": "task_updated",
+      "task": {
+        "id": <uuid string>,
+        "category": <string>,
+        "text": <string>,
+        "completed": <bool>,
+        "due": <int | null>
+      }
+    }
+    {"type": "task_deleted", "task_id": <uuid string>}
+    ```
+- PONG
 
 ## Authentication Endpoints
 
