@@ -10,6 +10,7 @@ use axum::{
         ws::{Message, WebSocket, WebSocketUpgrade},
     },
     http::StatusCode,
+    response::IntoResponse,
     routing,
 };
 use chrono::{Duration, Utc};
@@ -18,6 +19,7 @@ use jsonwebtoken::{DecodingKey, EncodingKey, Header, Validation, errors::Result 
 use redis::{AsyncCommands, Client as RedisClient};
 use serde::{Deserialize, Serialize};
 use tokio::net::TcpListener;
+use tower_http::cors::{Any, CorsLayer};
 use uuid::Uuid;
 
 type Pool = bb8::Pool<RedisClient>;
@@ -164,6 +166,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
         RedisClient::open(env::var("REDIS_URL").unwrap_or_else(|_| "redis://127.0.0.1:6379".to_owned()))?;
     let pool = Pool::builder().build(redis_client.clone()).await?;
     let jwt_secret = env::var("JWT_SECRET").unwrap_or_else(|_| "dont-forget-to-remove-me".to_owned()); // TODO: Remove fallback to hardcoded secret!!!
+    let cors = CorsLayer::new()
+        // .allow_origin("http://localhost:3000".parse::<HeaderValue>().unwrap())
+        .allow_origin(Any) // TODO
+        .allow_methods(Any)
+        .allow_headers(Any);
     let router = Router::new()
         .route("/auth/register", routing::post(register_handler))
         .route("/auth/login", routing::post(login_handler))
@@ -171,6 +178,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .route("/task", routing::get(get_all_tasks_handler).post(create_task_handler))
         .route("/task/{id}", routing::get(get_task_handler).post(update_task_handler).delete(delete_task_handler))
         .route("/websocket", routing::get(websocket_handler))
+        .layer(cors)
         .with_state(AppState {
             redis_client,
             pool,
@@ -442,7 +450,7 @@ async fn websocket_handler(
     websocket: WebSocketUpgrade,
     Query(query): Query<WebsocketQuery>,
     State(state): State<AppState>,
-) -> HandlerResult<()> {
+) -> Result<impl IntoResponse, (StatusCode, String)> {
     let mut conn = state.pool.get().await.map_err(internal_error)?;
     let blacklist_key = format!("blacklist:{}", query.jwt);
     if conn.exists(&blacklist_key).await.map_err(internal_error)? {
@@ -451,7 +459,7 @@ async fn websocket_handler(
     let jwt_data = validate_jwt(&state.jwt_secret, &query.jwt)?;
     let username = jwt_data.sub;
     let channel = format!("notifications:{username}");
-    let _dropme = websocket.on_upgrade(|socket| async move {
+    Ok(websocket.on_upgrade(|socket| async move {
         let (mut sender, mut receiver) = socket.split();
         let mut pubsub = match state.redis_client.get_async_pubsub().await {
             Ok(pubsub) => pubsub,
@@ -526,8 +534,7 @@ async fn websocket_handler(
         if let Err(err) = sender.send(Message::Close(None)).await {
             eprintln!("WebSocket connection close send error: {err}");
         }
-    });
-    Ok((StatusCode::OK, ()))
+    }))
 }
 
 async fn send_error(sender: &mut SplitSink<WebSocket, Message>, message: String) {

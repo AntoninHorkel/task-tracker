@@ -68,9 +68,7 @@
           profile = "dev";
         };
         cargoArtifactsDebug = craneLibSlim.buildDepsOnly commonArgsDebug;
-        debug = craneLibSlim.buildPackage (
-          commonArgsDebug // { inherit cargoArtifactsDebug; }
-        );
+        debug = craneLibSlim.buildPackage (commonArgsDebug // { inherit cargoArtifactsDebug; });
         release = craneLibSlim.buildPackage (commonArgs // { profile = "release"; });
       in
       {
