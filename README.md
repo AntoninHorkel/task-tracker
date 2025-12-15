@@ -1,10 +1,61 @@
 # Task Tracker
 
+## Deployment
+
+This may require root access, depending on your Docker configuration
+
+```sh
+docker compose up -d # Build and start the containers
+docker compose logs -f # View the logs
+docker compose down -v # Stop and remove everything including volumes
+```
+
 ## Environment variables
 
-- `REDIS_URL`: Redis URL, defaults to `redis://127.0.0.1`
+- `REDIS_URL`: Redis URL, defaults to `redis://127.0.0.1:6379`
 - `ROUTER_URL`: The router will listen on this URL, defaults to `127.0.0.1:6767`
 - `JWT_SECRET`: Self-explanatory
+
+## WebSocket Endpoint
+
+**Connect on:** `ws://localhost:6767/websocket?jwt=...`
+
+### Send messages
+
+Text:
+```json
+{"type": "refresh_jwt", "jwt": <string>}
+```
++ PING
+
+### Receive messages
+
+Text:
+```json
+{"type": "error", "message": <string>}
+{
+  "type": "task_created",
+  "task": {
+    "id": <uuid string>,
+    "category": <string>,
+    "text": <string>,
+    "completed": <bool>,
+    "due": <int | null>
+  }
+}
+{
+  "type": "task_updated",
+  "task": {
+    "id": <uuid string>,
+    "category": <string>,
+    "text": <string>,
+    "completed": <bool>,
+    "due": <int | null>
+  }
+}
+{"type": "task_deleted", "task_id": <uuid string>}
+```
++ PONG
 
 ## Authentication Endpoints
 

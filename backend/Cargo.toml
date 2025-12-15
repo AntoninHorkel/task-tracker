@@ -43,12 +43,17 @@ rpath = true
 # rustflags = ["-C", "target-cpu=native"]
 
 [dependencies]
-axum = "0.8"
+axum = { version = "0.8", features = ["ws"] }
 bb8 = "0.9"
 bcrypt = "0.17"
 chrono = "0.4"
+futures = "0.3"
 jsonwebtoken = { version = "10.2", features = ["rust_crypto"] }
-redis = { version = "1.0", default-features = false, features = ["tokio-comp", "bb8"] }
+redis = { version = "1.0", default-features = false, features = [
+  "tokio-comp",
+  "bb8",
+  # "connection-manager",
+] }
 serde = "1.0"
 serde_json = "1.0"
 tokio = { version = "1.48", features = ["macros", "rt-multi-thread"] }
@@ -75,19 +80,19 @@ warnings = "warn"
 [lints.clippy]
 # TODO: Add all common metadata
 cargo = { level = "warn", priority = -1 }
-multiple_crate_versions = "warn" # expect
+multiple_crate_versions = "warn"                # expect
 complexity = { level = "deny", priority = -1 }
 correctness = { level = "deny", priority = -1 }
 nursery = { level = "deny", priority = -1 }
 cognitive_complexity = "warn"
 pedantic = { level = "deny", priority = -1 }
-cast_possible_truncation = "warn" # expect
-cast_possible_wrap = "warn" # expect
-cast_precision_loss = "warn" # expect
-cast_sign_loss = "warn" # expect
+cast_possible_truncation = "warn"               # expect
+cast_possible_wrap = "warn"                     # expect
+cast_precision_loss = "warn"                    # expect
+cast_sign_loss = "warn"                         # expect
 match_wildcard_for_single_variants = "allow"
-similar-names = "warn" # expect
-struct-excessive-bools = "warn" # expect
+similar-names = "warn"                          # expect
+struct-excessive-bools = "warn"                 # expect
 too_many_lines = "warn"
 perf = { level = "deny", priority = -1 }
 # TODO: Add more restrictions
