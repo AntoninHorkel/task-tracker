@@ -17,8 +17,8 @@ docker compose down -v # Stop and remove everything including volumes
 
 ## Environment variables (in `.env`)
 
-- `REDIS_URL`: Redis URL, defaults to `redis://127.0.0.1:6379`
-- `BACKEND_URL`: The router will listen on this URL, defaults to `127.0.0.1:6767` (`0.0.0.0:6767`)
+- `REDIS_URL`: Redis URL, defaults to `redis://127.0.0.1:6379`, in Docker to `redis://redis:6379`
+- `BACKEND_URL`: The router will listen on this URL, defaults to `0.0.0.0:6767`
 - `FRONTEND_URL`: The frontend will run on this URL, defaults to `127.0.0.1:3000`
 - `JWT_SECRET`: Self-explanatory
 
