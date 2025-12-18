@@ -21,15 +21,25 @@ services:
       dockerfile: Dockerfile
     container_name: task-tracker-backend
     working_dir: /backend
-    environment:
-      - REDIS_URL=redis://127.0.0.1:6379
-      - ROUTER_URL=127.0.0.1:6767
-      - JWT_SECRET=super-duper-ultra-secret-stuff
+    env_file: ".env"
     ports:
       - "6767:6767"
     depends_on:
       redis:
         condition: service_healthy
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: task-tracker-frontend
+    working_dir: /frontend
+    env_file: ".env"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
     restart: unless-stopped
 
 volumes:

@@ -2,6 +2,8 @@
 
 ## Deployment
 
+**Don't forget to change `JWT_SECRET` in `.env`!!!**
+
 This may require root access, depending on your Docker configuration
 
 ```sh
@@ -10,10 +12,14 @@ docker compose logs -f # View the logs
 docker compose down -v # Stop and remove everything including volumes
 ```
 
-## Environment variables
+- Frontend runs on `http://localhost:3000`
+- RedisInsight runs on `http://localhost:8001`
+
+## Environment variables (in `.env`)
 
 - `REDIS_URL`: Redis URL, defaults to `redis://127.0.0.1:6379`
-- `ROUTER_URL`: The router will listen on this URL, defaults to `127.0.0.1:6767`
+- `BACKEND_URL`: The router will listen on this URL, defaults to `127.0.0.1:6767` (`0.0.0.0:6767`)
+- `FRONTEND_URL`: The frontend will run on this URL, defaults to `127.0.0.1:3000`
 - `JWT_SECRET`: Self-explanatory
 
 ## WebSocket Endpoint
@@ -38,6 +44,7 @@ docker compose down -v # Stop and remove everything including volumes
       "task": {
         "id": <uuid string>,
         "category": <string>,
+        "title": <string>,
         "text": <string>,
         "completed": <bool>,
         "due": <int | null>
@@ -48,6 +55,7 @@ docker compose down -v # Stop and remove everything including volumes
       "task": {
         "id": <uuid string>,
         "category": <string>,
+        "title": <string>,
         "text": <string>,
         "completed": <bool>,
         "due": <int | null>
@@ -169,6 +177,7 @@ Get all tasks for authenticated user
           {
             "id": <uuid string>,
             "category": <string>,
+            "title": <string>,
             "text": <string>,
             "completed": <bool>,
             "due": <int | null>
@@ -191,6 +200,7 @@ Create a new task
     {
       "jwt": <string>,
       "category": <string>,
+      "title": <string>,
       "text": <string>,
       "completed": <bool>,
       "due": <int | null>
@@ -231,6 +241,7 @@ Get a specific task by ID
         {
           "id": <uuid string>,
           "category": <string>,
+          "title": <string>,
           "text": <string>,
           "completed": <bool>,
           "due": <int | null>
@@ -257,6 +268,7 @@ Update an existing task
     {
       "jwt": <string>,
       "category": <string | null>,
+      "title": <string | null>,
       "text": <string | null>,
       "completed": <bool | null>,
       "due": <int | null>

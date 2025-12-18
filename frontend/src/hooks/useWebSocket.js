@@ -12,13 +12,13 @@ export const useWebSocket = (token) => {
     wsRef.current = ws;
 
     ws.onopen = () => {
-      console.log('✅ WebSocket connected');
+      // console.log('WebSocket connected');
     };
     
     ws.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        console.log('📨 WebSocket message:', data);
+        // console.log('WebSocket message:', data);
         
         switch (data.type) {
           case 'task_created':
@@ -45,9 +45,9 @@ export const useWebSocket = (token) => {
       console.error('WebSocket error:', err);
     };
 
-    ws.onclose = () => {
-      console.log('WebSocket disconnected');
-    };
+    // ws.onclose = () => {
+    //   console.log('WebSocket disconnected');
+    // };
 
     return () => {
       if (ws.readyState === WebSocket.OPEN) {

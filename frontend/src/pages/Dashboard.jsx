@@ -18,7 +18,7 @@ export const Dashboard = () => {
   useEffect(() => {
     const loadTasks = async () => {
       try {
-        const tasks = await taskApi.getTasks(authState.token);
+        const tasks = await taskApi.getAllTasks(authState.token);
         taskDispatch({ type: 'SET_TASKS', payload: tasks });
       } catch (err) {
         console.error('Failed to load tasks:', err);

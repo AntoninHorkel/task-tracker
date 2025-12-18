@@ -5,10 +5,10 @@ export const AuthContext = createContext();
 const authReducer = (state, action) => {
   switch (action.type) {
     case 'LOGIN':
-      return { 
-        token: action.payload.jwt, 
-        username: action.payload.username, 
-        isAuthenticated: true 
+      return {
+        token: action.payload.jwt,
+        username: action.payload.username,
+        isAuthenticated: true
       };
     case 'LOGOUT':
       return { token: null, username: null, isAuthenticated: false };

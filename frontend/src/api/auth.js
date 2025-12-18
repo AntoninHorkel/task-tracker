@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:6767';
+const API_BASE = import.meta.env.VITE_BACKEND_URL || 'http://localhost:6767';
 
 export const authApi = {
   async register(username, password) {
@@ -7,7 +7,10 @@ export const authApi = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password })
     });
-    if (!res.ok) throw new Error('Registration failed');
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(errorText || 'Registration failed');
+    }
     return res.json();
   },
 
@@ -17,7 +20,23 @@ export const authApi = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password })
     });
-    if (!res.ok) throw new Error('Login failed');
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(errorText || 'Login failed');
+    }
+    return res.json();
+  },
+
+  async refreshJWT(jwt) {
+    const res = await fetch(`${API_BASE}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ jwt })
+    });
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(errorText || 'JWT refresh failed');
+    }
     return res.json();
   },
 
@@ -27,6 +46,10 @@ export const authApi = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ jwt })
     });
-    return res.ok;
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(errorText || 'Logout failed');
+    }
+    return true;
   }
 };

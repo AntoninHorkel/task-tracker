@@ -6,8 +6,9 @@ import { taskApi } from '../api/tasks';
 
 export const TaskItem = ({ task }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [title, setTitle] = useState(task.title);
   const [category, setCategory] = useState(task.category);
+  const [title, setTitle] = useState(task.title);
+  const [text, setText] = useState(task.text);
   const { state: authState } = useContext(AuthContext);
   const { dispatch } = useContext(TaskContext);
 
@@ -25,8 +26,9 @@ export const TaskItem = ({ task }) => {
   const handleUpdate = async () => {
     try {
       const updated = await taskApi.updateTask(authState.token, task.id, {
-        title,
-        category
+        category: category,
+        title: title,
+        text: text,
       });
       dispatch({ type: 'UPDATE_TASK', payload: updated });
       setIsEditing(false);
@@ -61,6 +63,13 @@ export const TaskItem = ({ task }) => {
           onChange={(e) => setCategory(e.target.value)}
           className="w-full px-3 py-2 border rounded-md mb-2"
           placeholder="Category"
+        />
+        <input
+          type="text"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          className="w-full px-3 py-2 border rounded-md mb-2"
+          placeholder="Task text"
         />
         <div className="flex gap-2">
           <button 
@@ -98,6 +107,10 @@ export const TaskItem = ({ task }) => {
           <span className="inline-block mt-1 px-3 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
             {task.category}
           </span>
+          {}
+          <p className={"text-sm font-semibold text-gray-800"}>
+            {task.text}
+          </p>
         </div>
       </div>
       

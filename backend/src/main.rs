@@ -43,6 +43,7 @@ struct User {
 struct Task {
     id: Uuid,
     category: String,
+    title: String,
     text: String,
     completed: bool,
     due: Option<i32>, // UNIX timestamp
@@ -97,6 +98,7 @@ type GetAllTasksResponse = Vec<Task>;
 struct CreateTaskRequest {
     jwt: String,
     category: String,
+    title: String,
     text: String,
     completed: bool,
     due: Option<i32>, // UNIX timestamp
@@ -115,6 +117,7 @@ type GetTaskResponse = Task;
 struct UpdateTaskRequest {
     jwt: String,
     category: Option<String>,
+    title: Option<String>,
     text: Option<String>,
     completed: Option<bool>,
     due: Option<i32>, // UNIX timestamp
@@ -167,8 +170,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let pool = Pool::builder().build(redis_client.clone()).await?;
     let jwt_secret = env::var("JWT_SECRET").unwrap_or_else(|_| "dont-forget-to-remove-me".to_owned()); // TODO: Remove fallback to hardcoded secret!!!
     let cors = CorsLayer::new()
-        // .allow_origin("http://localhost:3000".parse::<HeaderValue>().unwrap())
-        .allow_origin(Any) // TODO
+        .allow_origin([env::var("FRONTEND_URL").unwrap_or_else(|_| "127.0.0.1:3000".to_owned()).parse()?])
         .allow_methods(Any)
         .allow_headers(Any);
     let router = Router::new()
@@ -184,7 +186,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             pool,
             jwt_secret,
         });
-    let listener = TcpListener::bind(env::var("ROUTER_URL").unwrap_or_else(|_| "127.0.0.1:6767".to_owned())).await?;
+    let listener = TcpListener::bind(env::var("BACKEND_URL").unwrap_or_else(|_| "127.0.0.1:6767".to_owned())).await?;
     axum::serve(listener, router).await?;
     Ok(())
 }
@@ -304,14 +306,14 @@ async fn logout_handler(
 
 async fn get_all_tasks_handler(
     State(state): State<AppState>,
-    Json(payload): Json<GetAllTasksRequest>,
+    Query(query): Query<GetAllTasksRequest>,
 ) -> HandlerResult<Json<GetAllTasksResponse>> {
     let mut conn = state.pool.get().await.map_err(internal_error)?;
-    let blacklist_key = format!("blacklist:{}", payload.jwt);
+    let blacklist_key = format!("blacklist:{}", query.jwt);
     if conn.exists(&blacklist_key).await.map_err(internal_error)? {
         return Err((StatusCode::UNAUTHORIZED, "JWT has been revoked".to_owned()));
     }
-    let jwt_data = validate_jwt(&state.jwt_secret, &payload.jwt)?;
+    let jwt_data = validate_jwt(&state.jwt_secret, &query.jwt)?;
     let username = jwt_data.sub;
     let task_ids_key = format!("task_ids:{username}");
     let task_ids: Vec<String> = conn.smembers(&task_ids_key).await.map_err(internal_error)?;
@@ -342,6 +344,7 @@ async fn create_task_handler(
     let task = Task {
         id: task_id,
         category: payload.category,
+        title: payload.title,
         text: payload.text,
         completed: payload.completed,
         due: payload.due,
@@ -398,6 +401,9 @@ async fn update_task_handler(
     if let Some(category) = payload.category {
         task.category = category;
     }
+    if let Some(title) = payload.title {
+        task.title = title;
+    }
     if let Some(text) = payload.text {
         task.text = text;
     }
@@ -448,8 +454,8 @@ async fn delete_task_handler(
 
 async fn websocket_handler(
     websocket: WebSocketUpgrade,
-    Query(query): Query<WebsocketQuery>,
     State(state): State<AppState>,
+    Query(query): Query<WebsocketQuery>,
 ) -> Result<impl IntoResponse, (StatusCode, String)> {
     let mut conn = state.pool.get().await.map_err(internal_error)?;
     let blacklist_key = format!("blacklist:{}", query.jwt);
