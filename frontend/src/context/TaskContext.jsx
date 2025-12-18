@@ -30,6 +30,9 @@ const taskReducer = (state, action) => {
     case 'SET_CATEGORY_FILTER':
       return { ...state, categoryFilter: action.payload };
     
+    case 'SET_SORT':
+      return { ...state, sortBy: action.payload };
+
     default:
       return state;
   }

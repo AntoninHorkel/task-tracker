@@ -7,6 +7,7 @@ export const TaskForm = () => {
   const [category, setCategory] = useState('');
   const [title, setTitle] = useState('');
   const [text, setText] = useState('');
+  const [dueDateTime, setDueDateTime] = useState('');
   const { state: authState } = useContext(AuthContext);
   const { dispatch } = useContext(TaskContext);
 
@@ -17,11 +18,23 @@ export const TaskForm = () => {
     }
 
     try {
-      const task = await taskApi.createTask(authState.token, { category: category, title: title, text: text });
-      dispatch({ type: 'ADD_TASK', payload: task });
+      const taskData = {
+        category: category,
+        title: title,
+        text: text
+      };
+
+      if (dueDateTime) {
+        const timestamp = Math.floor(new Date(dueDateTime).getTime() / 1000);
+        taskData.due = timestamp;
+      }
+
+      const newTask = await taskApi.createTask(authState.token, taskData);
+      
       setCategory('');
       setTitle('');
       setText('');
+      setDueDateTime('');
     } catch (err) {
       alert('Failed to create task: ' + err.message);
     }
@@ -37,7 +50,6 @@ export const TaskForm = () => {
         onChange={(e) => setCategory(e.target.value)}
         className="w-full px-3 py-2 border rounded-md mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
-      {}
       <input
         type="text"
         placeholder="Task title *"
@@ -45,7 +57,6 @@ export const TaskForm = () => {
         onChange={(e) => setTitle(e.target.value)}
         className="w-full px-3 py-2 border rounded-md mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
-      {}
       <input
         type="text"
         placeholder="Task text *"
@@ -53,6 +64,17 @@ export const TaskForm = () => {
         onChange={(e) => setText(e.target.value)}
         className="w-full px-3 py-2 border rounded-md mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
+      <div className="mb-3">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Due Date & Time (optional)
+        </label>
+        <input
+          type="datetime-local"
+          value={dueDateTime}
+          onChange={(e) => setDueDateTime(e.target.value)}
+          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
       <button
         onClick={handleSubmit}
         className="w-full px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
