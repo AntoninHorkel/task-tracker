@@ -22,6 +22,61 @@ docker compose down -v # Stop and remove everything including volumes
 - `FRONTEND_URL`: The frontend will run on this URL, defaults to `127.0.0.1:3000`
 - `JWT_SECRET`: Self-explanatory
 
+## Diagram
+
+```mermaid
+graph TB
+    subgraph "Client Layer"
+        User[User/Browser]
+    end
+    
+    subgraph "Frontend"
+        FE[Frontend<br/>JavaScript/React<br/>Port 3000]
+    end
+    
+    subgraph "Backend Services"
+        API[Backend API<br/>Rust/Axum<br/>Port 6767]
+        WS[WebSocket Server<br/>/websocket?jwt=...]
+    end
+    
+    subgraph "Data Layer"
+        Redis[(Redis<br/>Database)]
+        RedisInsight[RedisInsight<br/>Monitoring<br/>Port 8001]
+    end
+    
+    subgraph "Authentication"
+        JWT[JWT Token<br/>Management]
+    end
+    
+    User -->|HTTP/HTTPS| FE
+    User -->|WebSocket| WS
+    
+    FE -->|REST API Calls| API
+    FE -->|Real-time Updates| WS
+    
+    API --> JWT
+    WS --> JWT
+    
+    API -->|Store/Retrieve<br/>Users & Tasks| Redis
+    WS -->|Real-time<br/>Notifications| Redis
+    
+    RedisInsight -.->|Monitor| Redis
+    
+    JWT -.->|Validate| Redis
+    
+    classDef frontend fill:#61dafb,stroke:#333,stroke-width:2px,color:#000
+    classDef backend fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    classDef data fill:#e76f51,stroke:#333,stroke-width:2px,color:#fff
+    classDef auth fill:#2a9d8f,stroke:#333,stroke-width:2px,color:#fff
+    classDef user fill:#264653,stroke:#333,stroke-width:2px,color:#fff
+    
+    class FE frontend
+    class API,WS backend
+    class Redis,RedisInsight data
+    class JWT auth
+    class User user
+```
+
 ## WebSocket Endpoint
 
 **Connect on:** `ws://localhost:6767/websocket?jwt=...`
